@@ -8,13 +8,13 @@ if (isset($_POST["submit"])) {
     if (!preg_match( "/^([3-6]\d{12})$/", htmlspecialchars($_POST["personId"]))) {
         $validationErrors[] = "Person ID is not valid ID number";
     }
-    if (!preg_match("/\w{0,100}/", htmlspecialchars($_POST["name"]))) {
+    if (!preg_match("/\w{1,100}/", htmlspecialchars($_POST["name"]))) {
         $validationErrors[] =  "Name is not valid";
     }
-    if (!preg_match("/\w{0,100}/", htmlspecialchars($_POST["lastName"]))) {
+    if (!preg_match("/\w{1,100}/", htmlspecialchars($_POST["lastName"]))) {
         $validationErrors[] = "Last Name is not valid";
     }
-    if(!isset($_POST["luggageWeight"])) {
+    if(empty(htmlspecialchars($_POST["luggageWeight"]))) {
         $validationErrors[] = "Luggage weight is required";
     }
     if (!preg_match("/[\w\s{50,1000}]/i", htmlspecialchars($_POST["comments"]))) {
