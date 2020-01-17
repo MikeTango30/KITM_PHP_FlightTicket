@@ -1,3 +1,33 @@
+<?php
+//Validation
+$validationErrors = [];
+if (isset($_POST["submit"])) {
+    if(!isset($_POST["flightNumber"])) {
+        $validationErrors[] = "Flight Number is required";
+    }
+    if (!preg_match( "/^([3-6]\d{12})$/", htmlspecialchars($_POST["personId"]))) {
+        $validationErrors[] = "Person ID is not valid ID number";
+    }
+    if (!preg_match("/\w{0,100}/", htmlspecialchars($_POST["name"]))) {
+        $validationErrors[] =  "Name is not valid";
+    }
+    if (!preg_match("/\w{0,100}/", htmlspecialchars($_POST["lastName"]))) {
+        $validationErrors[] = "Last Name is not valid";
+    }
+    if(!isset($_POST["luggageWeight"])) {
+        $validationErrors[] = "Luggage weight is required";
+    }
+    if (!preg_match("/[\w\s{50,1000}]/i", htmlspecialchars($_POST["comments"]))) {
+        $validationErrors[] =  "Comments must be between 50 and 1000 characters";
+    }
+    //Business Logic
+    $luggagePrice = 0;
+    if (htmlspecialchars($_POST["luggageWeight"]) > LUGGAGE_LIMIT) {
+        $luggagePrice = LUGGAGE_OVER;
+    }
+}
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,6 +39,8 @@
     <link rel="stylesheet" type="text/css" href="view/css/bootstrap.min.css">
     <!--  Bootstrap override-->
     <link rel="stylesheet" type="text/css" href="view/css/styles.css">
+    <!--  Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Hind+Madurai:400,700|Quantico:400,700&display=swap" rel="stylesheet">
     <title><?=SITE_NAME?></title>
 </head>
 <body>
@@ -19,11 +51,24 @@
                 <h1><?=TABLE_TITLE?></h1>
             </div>
         </div>
+      <div class="row">
+        <div class="col errors">
+          <?php if ($validationErrors):?>
+            <div class="alert alert-danger" role="alert">
+              <ul>
+                <?php foreach ($validationErrors as $validationError):?>
+                  <li><?=$validationError?></li>
+                <?php endforeach;?>
+              </ul>
+            </div>
+          <?php endif;?>
+        </div>
+      </div>
         <div class="row justify-content-center">
             <form method="post">
                 <div class="form-group">
                     <label for="flightNumber">Flight Number</label>
-                    <select name="flightNumber" id="flightNumber" class="form-control">-->
+                    <select name="flightNumber" id="flightNumber" class="form-control">
                         <option selected disabled>-- Select --</option>
                         <?php foreach ($flightsData["flightNumbers"] as $flightNumber):?>
                             <option value="<?=$flightNumber?>"><?=$flightNumber?></option>
@@ -44,7 +89,7 @@
                 </div>
                 <div class="form-group">
                     <label for="from">From</label>
-                    <select name="from" id="from" class="form-control">-->
+                    <select name="from" id="from" class="form-control">
                         <option selected disabled>-- Select --</option>
                         <?php foreach ($flightsData["from"] as $from):?>
                             <option value="<?=$from?>"><?=$from?></option>
@@ -53,7 +98,7 @@
                 </div>
                 <div class="form-group">
                     <label for="flightNumber">To</label>
-                    <select name="to" id="to" class="form-control">-->
+                    <select name="to" id="to" class="form-control">
                         <option selected disabled>-- Select --</option>
                         <?php foreach ($flightsData["to"] as $to):?>
                             <option value="<?=$to?>"><?=$to?></option>
@@ -70,111 +115,119 @@
                 </div>
                 <div class="form-group">
                     <label for="comments">Comments</label>
-                    <textarea type="text" contenteditable="true" class="form-control" id="comments" name="comments" placeholder="Comments..."></textarea>
+                    <textarea type="text" contenteditable="true" class="form-control" id="comments" name="comments">
+                      Thank you for using Interdimensional space flight company! Have a nice flight, dear client!
+                    </textarea>
                 </div>
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#flightTicket">
+                <button type="submit" name="submit" class="btn btn-primary">
+                  Submit
+                </button>
+                <?php if (isset($_POST["submit"]) && !$validationErrors):?>
+                <button type="button" name="submit" class="btn btn-primary" data-toggle="modal" data-target="#flightTicket">
                     Print Flight Ticket
                 </button>
+                <?php endif;?>
             </form>
         </div>
         <!-- Modal -->
         <div class="modal fade" id="flightTicket" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Flight Ticket</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="container ticket-container">
-                                <div class="row ticket-flight-info">
-                                    <div class="col-8 flight-info">
-                                        <div class="row">
-                                            <div class="col-4 flight-number">
-                                                <?=htmlspecialchars($_POST["flightNumber"])?>
-                                            </div>
-                                            <div class="col-8 from-to">
-                                                <div class="row from">
-                                                    <div class="col-4">
-                                                        FROM:
-                                                    </div>
-                                                    <div class="col-8 from">
-                                                        <?=htmlspecialchars($_POST["from"])?>
-                                                    </div>
-                                                </div>
-                                                <div class="row to">
-                                                    <div class="col-4">
-                                                        TO:
-                                                    </div>
-                                                    <div class="col-8 to">
-                                                        <?=htmlspecialchars($_POST["to"])?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row client-info">
-                                            <div class="col-4 client-name">
-                                                Customer: <?=htmlspecialchars($_POST["name"])." ".htmlspecialchars($_POST["lastName"])?>
-                                            </div>
-                                            <div class="col-4 client-Id">
-                                                ID: <?=htmlspecialchars($_POST["personId"])?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-4 ticket-price-info">
-                                        <div class="row">
-                                            Ticket Price: <?=htmlspecialchars($_POST["price"])." EUR + VAT(21%): ".htmlspecialchars($_POST["price"])*VAT?> EUR
-                                        </div>
-                                        <div class="row price-luggage">
-                                            <?php
-                                            $luggagePrice = 0;
-                                            if (htmlspecialchars($_POST["luggageWeight"]) > LUGGAGE_LIMIT) {
-                                                $luggagePrice = LUGGAGE_OVER;
-                                            }
-                                            ?>
-                                            Luggage price: <?=$luggagePrice?> EUR
-                                        </div>
-                                        <div class="row">
-                                            <?php
-                                            $totalPrice = ($_POST["price"]) + $_POST["price"] * VAT +
-                                                $luggagePrice?>
-                                            Total price: <?=$totalPrice?> EUR
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row comment">
-                                    Additional comments: <?=htmlspecialchars($_POST["comments"])?>
-                                </div>
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Flight Ticket</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="container ticket-container">
+                    <div class="row ticket-flight-info">
+                      <div class="col-8 flight-info">
+                        <div class="row flight">
+                          <div class="col-4 flight-number">
+                              <span class="box-name">Flight No:</span>
+                            <br>
+                              <?=htmlspecialchars($_POST["flightNumber"])?>
+                          </div>
+                          <div class="col-8 from-to">
+                            <div class="row ">
+                              <div class="col-4">
+                                <span class="box-name">FROM:</span>
+                              </div>
+                              <div class="col-8 from">
+                                  <?=htmlspecialchars($_POST["from"])?>
+                              </div>
                             </div>
+                            <div class="row to">
+                              <div class="col-4">
+                                <span class="box-name">TO:</span>
+                              </div>
+                              <div class="col-8 to">
+                                  <?=htmlspecialchars($_POST["to"])?>
+                              </div>
+                            </div>
+                          </div>
                         </div>
+                        <div class="row client-info">
+                          <div class="col-4 client-name">
+                            <span class="box-name">Customer:</span>
+                              <br>
+                              <?=htmlspecialchars($_POST["name"])." ".htmlspecialchars($_POST["lastName"])?>
+                          </div>
+                          <div class="col-4 client-id">
+                            <span class="box-name">ID:</span><?=htmlspecialchars($_POST["personId"])?>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-4 ticket-price-info">
+                        <div class="row">
+                          <span class="box-name ticket-price">Ticket Price:</span>
+                        </div>
+                        <div class="row">
+                          <div class="col-6">
+                            <span class="box-name">Ticket:</span>
+                          </div>
+                          <div class="col-6">
+                              <?=htmlspecialchars($_POST["price"])?><span class="currency">sEUR</span>
+                          </div>
+
+                          <div class="col-6">
+                            <span class="box-name">VAT(21%):</span>
+                          </div>
+                          <div class="col-6">
+                              <?=htmlspecialchars($_POST["price"])*VAT?> <span class="currency">sEUR</span>
+                          </div>
+                          <div class="col-6">
+                            <span class="box-name">Luggage:</span>
+                          </div>
+                          <div class="col-6">
+                              <?=$luggagePrice?> <span class="currency">sEUR</span>
+                          </div>
+                          <div class="col-6">
+                              <?php $totalPrice = ($_POST["price"]) + $_POST["price"] * VAT + $luggagePrice?>
+                            <span class="box-name">Total:</span>
+                          </div>
+                          <div class="col-6">
+                              <?=$totalPrice?> <span class="currency">sEUR</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Print ticket</button>
+                    <div class="row comment">
+                      <?=htmlspecialchars($_POST["comments"])?>
                     </div>
+                  </div>
                 </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Print ticket</button>
+              </div>
             </div>
+          </div>
         </div>
-        <?php
-        /*
-         *  Skrydžio nr,+
- asmens kodas,
- vardas, pavardė,
- iš kur skrendą,+
- į kur skrenda,+
- kaina, bagažas,
- pastabos
-         */
-        if(isset($_POST["submit"])) {
-            foreach ($_POST as $value) {
-//                  echo htmlspecialchars($value)."</br>";
-            }
-        }
-        ?>
     </div>
 </div>
 <!-- Optional JavaScript -->
