@@ -1,0 +1,19 @@
+.container {
+  max-width: 85%; }
+  .container h1 {
+    margin: 2rem 0;
+    text-align: center; }
+  .container form {
+    min-width: 400px;
+    max-width: 600px; }
+    .container form .form-group {
+      margin-bottom: 0.5rem; }
+  .container .ticket-container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #0056b3; }
+  .container .modal-dialog {
+    min-width: 600px;
+    max-width: 800px; }
+
+/*# sourceMappingURL=styles.css.map */
