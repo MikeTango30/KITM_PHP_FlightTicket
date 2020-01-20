@@ -5,7 +5,7 @@ if (isset($_POST["submit"])) {
     if(!isset($_POST["flightNumber"])) {
         $validationErrors[] = "Flight Number is required";
     }
-    if (!preg_match( "/^([3-6]\d{12})$/", htmlspecialchars($_POST["personId"]))) {
+    if (!preg_match( "/^([3-6]\d{10})$/", htmlspecialchars($_POST["personId"]))) {
         $validationErrors[] = "Person ID is not valid ID number";
     }
     if (!preg_match("/\w{1,100}/", htmlspecialchars($_POST["name"]))) {
