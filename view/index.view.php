@@ -174,10 +174,10 @@ if (isset($_POST["submit"])) {
                           <div class="col-4 client-name">
                             <span class="box-name">Customer:</span>
                               <br>
-                              <?=htmlspecialchars($_POST["name"])." ".htmlspecialchars($_POST["lastName"])?>
+                              <?=trim(htmlspecialchars($_POST["name"]))." ".trim(htmlspecialchars($_POST["lastName"]))?>
                           </div>
                           <div class="col-4 client-id">
-                            <span class="box-name">ID:</span><?=htmlspecialchars($_POST["personId"])?>
+                            <span class="box-name">ID:</span><?=trim(htmlspecialchars($_POST["personId"]))?>
                           </div>
                         </div>
                       </div>
@@ -190,14 +190,14 @@ if (isset($_POST["submit"])) {
                             <span class="box-name">Ticket:</span>
                           </div>
                           <div class="col-6">
-                              <?=htmlspecialchars($_POST["price"])?><span class="currency">sEUR</span>
+                              <?=trim(htmlspecialchars($_POST["price"]))?><span class="currency">sEUR</span>
                           </div>
 
                           <div class="col-6">
                             <span class="box-name">VAT(21%):</span>
                           </div>
                           <div class="col-6">
-                              <?=htmlspecialchars($_POST["price"])*VAT?> <span class="currency">sEUR</span>
+                              <?=trim(htmlspecialchars($_POST["price"]))*VAT?> <span class="currency">sEUR</span>
                           </div>
                           <div class="col-6">
                             <span class="box-name">Luggage:</span>
@@ -216,7 +216,7 @@ if (isset($_POST["submit"])) {
                       </div>
                     </div>
                     <div class="row comment">
-                      <?=htmlspecialchars($_POST["comments"])?>
+                      <?=trim(htmlspecialchars($_POST["comments"]))?>
                     </div>
                   </div>
                 </div>
